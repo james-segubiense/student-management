@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 
@@ -80,6 +81,25 @@ app.get('/students/search', (req, res) => {
       res.render('index', { students: results });
     }
   );
+});
+
+app.post('/students/delete/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.query('DELETE FROM students WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Unable to delete student');
+    }
+
+    
+    if (results.affectedRows === 0) {
+      return res.status(404).send('Student not found');
+    }
+
+    
+    res.redirect('/');
+  });
 });
 
 app.listen(3000, () => {
